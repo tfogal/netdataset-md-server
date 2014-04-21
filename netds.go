@@ -10,6 +10,9 @@ import "os"
 const(
   port = ":4445"
 )
+var(
+  NetworkByteOrder = binary.BigEndian
+)
 
 func main() {
   lstn, err := net.Listen("tcp", port)
@@ -94,9 +97,9 @@ func processCommand(buf *bufio.Reader, data []byte) (error) {
     case cmd_BRICK:
       var lod uint32
       var bidx uint32
-      err := binary.Read(buf, binary.BigEndian, &lod)
+      err := binary.Read(buf, NetworkByteOrder, &lod)
       if err != nil { return err }
-      err = binary.Read(buf, binary.BigEndian, &bidx)
+      err = binary.Read(buf, NetworkByteOrder, &bidx)
       if err != nil { return err }
       fmt.Printf("BRICK lod=%d, bidx=%d\n", lod, bidx)
       break
@@ -109,7 +112,7 @@ func processCommand(buf *bufio.Reader, data []byte) (error) {
 // reads a string in our encoded way (size then string, a la fortran).
 func readstr(buf *bufio.Reader, data []byte) (string, error) {
   var u16 uint16
-  err := binary.Read(buf, binary.BigEndian, &u16)
+  err := binary.Read(buf, NetworkByteOrder, &u16)
   if err != nil {
     return "", fmt.Errorf("error reading string length on open: %v", err)
   }
